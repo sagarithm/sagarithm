@@ -1,10 +1,10 @@
 ## 💫 About Me
 
-I’m **Sagar Kewat**, the mind behind **Sagarithm** — a personal brand and innovation hub built on self-taught learning, creativity, and technological exploration. I focus on building meaningful, intelligent, and future-ready digital experiences.
+I’m **Sagar Kewat**, the mind behind **Sagarithm** | Youngest Self‑Taught Multi-Skilled Visionary Entrepeneur | Redefining possibilities through disruptive AI innovations.
 
 I believe technology is deeply interconnected, and instead of staying on the surface, I chose to dive deeper — mastering **20+ creative and technical skills** including design, development, AI, automation, cybersecurity, and digital innovation.
 
-Founder of **Pixartual**, shaping ideas into impactful digital realities.
+Founder of **Pixartual**, "Shaping Future Through Creative Code"
 
 > “Certain knowledge and skills can only be acquired through self-taught learning,  
 > rendering even substantial financial resources ineffective.”  
