@@ -29,7 +29,7 @@ SagarAI — AI companion combining emotional intelligence with real-world task e
 **Backend:** Node.js, FastAPI  
 **Database:** PostgreSQL, Supabase  
 **AI:** APIs, Prompt Engineering, Automation  
-**Deployment:** Vercel, Railway, Docker (basics)
+**Deployment:** Vercel, Railway, Docker
 
 ---
 
