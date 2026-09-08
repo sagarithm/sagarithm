@@ -27,7 +27,7 @@ SagarAI — AI companion combining emotional intelligence with real-world task e
 **Languages:** Python, JavaScript, TypeScript  
 **Frontend:** React, Next.js, Tailwind  
 **Backend:** Node.js, FastAPI  
-**Database:** PostgreSQL, Supabase  
+**Database:** PostgreSQL, Supabase, Firebase  
 **AI:** APIs, Prompt Engineering, Automation  
 **Deployment:** Vercel, Railway, Docker
 
