@@ -16,9 +16,9 @@ Building AI tools, automation systems, and scalable web applications.
 
 ### Work
 
+LovieMe — The ultimate custom subdomain platform for modern developers
 Clint — Automates lead generation and outreach workflows at scale  
 Periodly — Private cycle tracking with AI-driven insights  
-SagarAI — AI companion combining emotional intelligence with real-world task execution (in progress)
 
 ---
 
