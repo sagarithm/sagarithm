@@ -202,7 +202,7 @@ def count_up(num, word, x, y, attrs, begin, dur=1.1, frames=18):
                    f'<set attributeName="opacity" to="1" begin="{on:.3f}s"/>{off}</text>')
     return "".join(out)
 
-def tile(name, label, color, on, num, word, blurb, delay, pos):
+def tile(name, label, color, on, num, word, blurb, delay, pos, font_size=36):
     lines = wrap(blurb, 34)
     blurb_svg = "".join(
         f'<text class="r" {d(delay + 0.75 + i * 0.1)} x="24" y="{150 + i * 20}" font-family="{SANS}" '
@@ -225,7 +225,7 @@ def tile(name, label, color, on, num, word, blurb, delay, pos):
   <text class="sl" {d(delay + 0.35)} x="24" y="38" font-family="{MONO}" font-size="12" letter-spacing="1.2" fill="{on}">{label}</text>
   <g class="ai" {d(delay + 0.5)}><text class="n" style="animation-delay:{delay + 1.3:.2f}s" x="250" y="38" font-family="{MONO}" font-size="14" fill="{on}">&#8594;</text></g>
   <g clip-path="url(#slot_{name})"><g class="ro" {d(delay + 0.45)}>
-    {count_up(num, word, 22, 112, f'font-family="{SERIF}" font-size="44" fill="{on}"', delay + 0.45)}
+    {count_up(num, word, 22, 108, f'font-family="{SERIF}" font-size="{font_size}" fill="{on}"', delay + 0.45)}
   </g></g>
   {blurb_svg}
 </g>
@@ -289,7 +289,7 @@ def activity(data):
     write("activity.svg", svg(W, h, body, ["serif", "serif-i", "sans", "mono"],
                               f'{data["total_contributions"]:,} contributions in the last year, {cs}-day streak'))
 
-# ---- 4 · Blue Contribution Heatmap -------------------------------------------
+# ---- 4 · Blue Contribution Heatmap with User Tagline ------------------------
 BLUE = [PAPER_DEEP, "#c8d3ff", "#94a8ff", "#6280ff", TECH, "#1a3be0"]
 
 def level_for(c):
@@ -329,7 +329,7 @@ def heatmap(data):
     h = gy + 7 * step + 44
     body = f"""
 <rect width="{W}" height="{h}" rx="14" fill="{PAPER}"/>
-<text class="r" {d(0.8)} x="42" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Every day, <tspan font-style="italic" fill="{TECH}">in blue</tspan></text>
+<text class="r" {d(0.8)} x="42" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Shaping future <tspan font-style="italic" fill="{TECH}">through creative code</tspan></text>
 <text class="f" {d(0.8)} x="{right}" y="60" text-anchor="end" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{MUTED}">REFRESHED DAILY</text>
 {''.join(cells)}
 <g class="f" {d(2.4)}>{labels}
@@ -338,13 +338,13 @@ def heatmap(data):
 <text x="{legend_x + len(BLUE) * 14 + 2}" y="{gy + 7 * step + 16}" font-family="{MONO}" font-size="11" fill="{MUTED}">more</text></g>
 """
     write("heatmap.svg", svg(W, h, body, ["serif", "serif-i", "mono"],
-                             f'Contribution graph: {data["total_contributions"]:,} contributions in the last year'))
+                             f'Shaping future through creative code: {data["total_contributions"]:,} contributions'))
 
 # ---- 5 · Repo Cards & Section Titles ----------------------------------------
 REPO_W, REPO_H = 880 / 3 - 8, 176
 REPOS = [
     ("sagarithm-kit", "Cross-agent software engineering framework for AI coding agents.", "TypeScript", TECH, 18),
-    ("lovieme", "Custom subdomain & Anycast DNS infrastructure for modern web developers.", "TypeScript", STUDIO, 12),
+    ("clint", "Automates intelligent lead generation and outreach workflows at scale.", "TypeScript", STUDIO, 15),
     ("openhuman", "Merged PRs in core agent orchestrator, search tools, and engine traces.", "Rust", OSS, 28),
 ]
 
@@ -375,16 +375,16 @@ if __name__ == "__main__":
     data = json.load(open(DATA, encoding="utf-8"))
     hero()
     # 3 World Tiles: BUILD (Blue), OSS (Emerald Green), AI AGENTS (Purple)
+    # Balanced font-sizes so long words like 'contributions' and 'autonomous' don't overflow!
     tile("build", "BUILD", TECH, "#ffffff", "3+", "products",
-         "LovieMe, Clint automation, and Pixartual ecosystem for modern builders.", 3.1, 0)
-    tile("oss", "OPEN SOURCE", OSS, "#ffffff", "28+", "contributions",
-         "Merged PRs in Selenium, Twenty CRM, Cal.com, freeCodeCamp, and OpenHuman.", 3.35, 1)
-    tile("agent", "AI AGENTS", AI_PURPLE, "#ffffff", "100%", "autonomous",
-         "Sagarithm-Kit framework, Claude Desktop skills, MCP tooling, and workflows.", 3.6, 2)
+         "Clint, LovieMe, and Pixartual ecosystem for modern builders.", 3.1, 0, font_size=36)
+    tile("oss", "OPEN SOURCE", OSS, "#ffffff", "28+", "PRs merged",
+         "Merged in Selenium, Twenty CRM, Cal.com, freeCodeCamp, and OpenHuman.", 3.35, 1, font_size=33)
+    tile("agent", "AI AGENTS", AI_PURPLE, "#ffffff", "100%", "agentic",
+         "Sagarithm-Kit framework, Claude Desktop skills, MCP tooling, and workflows.", 3.6, 2, font_size=34)
     activity(data)
     for i, (name, desc, lang, color, stars) in enumerate(REPOS):
         repo_card(i, name, desc, lang, color, stars)
     section_title("What I'm", "building & contributing", "dark")
     section_title("What I'm", "building & contributing", "light")
     heatmap(data)
-
