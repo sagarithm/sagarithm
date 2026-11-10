@@ -375,7 +375,7 @@ def section_title(text, italic, theme):
 if __name__ == "__main__":
     data = json.load(open(DATA, encoding="utf-8"))
     hero()
-    tile("build", "BUILD", TECH, "#ffffff", "5", "products",
+    tile("build", "BUILD", TECH, "#ffffff", "5+", "products",
          "LovieMe, Periodly, Muzify, Clint & Pixartual ecosystem.", 3.1, 0, font_size=36)
     tile("oss", "OPEN SOURCE", OSS, "#ffffff", "12+", "major repos",
          "Merged in Selenium, Twenty CRM, Cal.com, freeCodeCamp, and OpenHuman.", 3.35, 1, font_size=33)
