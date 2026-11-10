@@ -5,76 +5,40 @@ import numpy as np
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, "..", "avatar.png")
+SRC = os.path.join(HERE, "..", "logo.png")
 OUT = os.path.join(HERE, "..", "sagar-ascii.svg")
 
-# 1. Flood-fill background isolation to get a pristine character cutout
-im_raw = Image.open(SRC).convert("RGB")
-arr_raw = np.array(im_raw)
-bg_color = np.median([arr_raw[0, 0], arr_raw[0, -1]], axis=0)
-diff = np.linalg.norm(arr_raw.astype(float) - bg_color, axis=2)
+im_raw = Image.open(SRC).convert("RGBA")
 
-h, w = arr_raw.shape[:2]
-visited = np.zeros((h, w), dtype=bool)
-from collections import deque
-q = deque()
-
-for x in range(w):
-    if diff[0, x] < 25: q.append((0, x)); visited[0, x] = True
-    if diff[h-1, x] < 25: q.append((h-1, x)); visited[h-1, x] = True
-for y in range(h):
-    if diff[y, 0] < 25: q.append((y, 0)); visited[y, 0] = True
-    if diff[y, w-1] < 25: q.append((y, w-1)); visited[y, w-1] = True
-
-while q:
-    cy, cx = q.popleft()
-    for dy, dx in [(-1,0),(1,0),(0,-1),(0,1)]:
-        ny, nx = cy+dy, cx+dx
-        if 0 <= ny < h and 0 <= nx < w and not visited[ny, nx]:
-            if diff[ny, nx] < 32:
-                visited[ny, nx] = True
-                q.append((ny, nx))
-
-rgba = np.zeros((h, w, 4), dtype=np.uint8)
-rgba[:, :, :3] = arr_raw
-rgba[:, :, 3] = np.where(visited, 0, 255)
-im_cutout = Image.fromarray(rgba, "RGBA")
-
-# 2. Setup ASCII target resolution
-COLS = 160
+# Setup ASCII target resolution
+COLS = 136
 ART_W_TARGET = 800
 CELL_W = ART_W_TARGET / COLS
 CELL_H = CELL_W * 15 / 8
 ROWS = round(COLS * 8 / 15)
-RAMP = " .`:-=+*cs#%@"
+RAMP = " .:-=+*cs#%@"
 
-im_resized = im_cutout.resize((COLS, ROWS), Image.LANCZOS)
+im_resized = im_raw.resize((COLS, ROWS), Image.LANCZOS)
 arr = np.array(im_resized)
 rgb = arr[:, :, :3]
 alpha = arr[:, :, 3]
 gray = (0.299 * rgb[:, :, 0] + 0.587 * rgb[:, :, 1] + 0.114 * rgb[:, :, 2])
 
-# Tone curve
-gamma = 1.15
-gray_norm = np.power(gray / 255.0, gamma)
-
 rows_txt = []
 for y in range(ROWS):
     chars = []
     for x in range(COLS):
-        if alpha[y, x] < 120:
+        if alpha[y, x] < 60:
             chars.append(" ")
             continue
-        lum = gray_norm[y, x]
-        if lum >= 0.94:
+        lum = gray[y, x] / 255.0
+        if lum > 0.82:
             chars.append(" ")
             continue
         idx = int((1.0 - lum) * (len(RAMP) - 1) + 0.5)
-        idx = max(0, min(len(RAMP) - 1, idx))
-        chars.append(RAMP[idx])
+        chars.append(RAMP[max(0, min(len(RAMP) - 1, idx))])
     rows_txt.append("".join(chars))
 
-# 3. Assemble SVG
 PAD = 20
 TITLEBAR_H = 30
 STATUS_H = 30
@@ -113,7 +77,7 @@ parts.append(f'<line x1="0" y1="{TITLEBAR_H}" x2="{CANVAS_W}" y2="{TITLEBAR_H}" 
 for i, dotcol in enumerate(["#ff5f56", "#ffbd2e", "#27c93f"]):
     parts.append(f'<circle cx="{PAD + i*16}" cy="{TITLEBAR_H/2}" r="5" fill="{dotcol}"/>')
 parts.append(f'<text x="{CANVAS_W/2}" y="{TITLEBAR_H/2 + 4}" fill="{TITLE_TEXT}" font-size="12" '
-             f'text-anchor="middle">sagar@github: ~$ ./portrait.sh</text>')
+             f'text-anchor="middle">sagar@github: ~$ ./logo.sh</text>')
 
 font_size = CELL_H * 0.86
 for ry, line in enumerate(rows_txt):
