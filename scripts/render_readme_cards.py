@@ -166,7 +166,7 @@ def hero():
 <rect width="{W}" height="{h}" rx="14" fill="{PAPER}"/>
 <g class="f" {d(0)}>
   <rect class="live" x="48" y="49" width="8" height="8" rx="2" fill="{TECH}"/>
-  <text x="66" y="57" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{MUTED}">PRODUCT ENGINEER &bull; FOUNDER @ PIXARTUAL</text>
+  <text x="66" y="57" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{MUTED}">PRODUCT ENGINEER &#8226; FOUNDER @ PIXARTUAL</text>
 </g>
 <text class="r" {d(0.15)} x="44" y="185" font-family="{SERIF}" font-size="116" letter-spacing="-2.5" fill="{INK}">Sagar</text>
 <text class="r" {d(0.30)} x="44" y="285" font-family="{SERIF}" font-style="italic" font-size="116" letter-spacing="-2.5" fill="url(#shine)">Kewat</text>
@@ -387,3 +387,4 @@ if __name__ == "__main__":
     section_title("What I'm", "building & contributing", "dark")
     section_title("What I'm", "building & contributing", "light")
     heatmap(data)
+
