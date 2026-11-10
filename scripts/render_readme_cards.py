@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Render Sagar's profile README cards as animated SVGs into cards/.
-Designed after Avi Vashishta's "Three Worlds" paper & ink aesthetic:
+Generates:
 - Cards: hero.svg, heatmap.svg, activity.svg, build.svg, oss.svg, agent.svg, repo cards, section titles.
 - Embedded subset WOFF fonts (Instrument Serif, Geist, Geist Mono).
 - All cards padded to tile seamlessly across rows on GitHub profile READMEs.
@@ -350,7 +350,6 @@ REPOS = [
 
 def repo_card(i, name, desc, lang, color, stars):
     delay = 4.6 + i * 0.12
-    # Format high star count nicely (e.g. 42.6k)
     star_str = f"{stars/1000:.1f}k" if stars >= 1000 else str(stars)
     meta = f"{lang}  ·  ★ {star_str}" if stars else f"{lang}  ·  active"
     body = f"""
@@ -376,13 +375,12 @@ def section_title(text, italic, theme):
 if __name__ == "__main__":
     data = json.load(open(DATA, encoding="utf-8"))
     hero()
-    # 3 World Tiles: BUILD (Blue), OSS (Emerald Green), AI AGENTS (Purple)
     tile("build", "BUILD", TECH, "#ffffff", "5", "products",
          "LovieMe, Periodly, Muzify, Clint & Pixartual ecosystem.", 3.1, 0, font_size=36)
     tile("oss", "OPEN SOURCE", OSS, "#ffffff", "12+", "major repos",
          "Merged in Selenium, Twenty CRM, Cal.com, freeCodeCamp, and OpenHuman.", 3.35, 1, font_size=33)
     tile("agent", "AI AGENTS", AI_PURPLE, "#ffffff", "100%", "agentic",
-         "Sagarithm-Kit framework, Claude Desktop skills, MCP tooling, and workflows.", 3.6, 2, font_size=34)
+         "Sagarithm-Kit framework, production skills, MCP tooling, and workflows.", 3.6, 2, font_size=34)
     activity(data)
     for i, (name, desc, lang, color, stars) in enumerate(REPOS):
         repo_card(i, name, desc, lang, color, stars)
