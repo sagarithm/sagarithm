@@ -70,14 +70,9 @@ MONO = "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
 FONT_FILES = {
     "fraunces-light": ("Fraunces", "normal", 300, "Fraunces-Light.ttf"),
     "fraunces-semi": ("Fraunces", "normal", 600, "Fraunces-SemiBold.ttf"),
+    "fraunces-semi-italic": ("Fraunces", "italic", 600, "Fraunces-SemiBold.ttf"),
     "inter-reg": ("Inter", "normal", 400, "Inter-Regular.ttf"),
     "inter-bold": ("Inter", "normal", 700, "Inter-Bold.ttf"),
-    # Legacy alias mappings for backwards compatibility
-    "serif": ("Fraunces", "normal", 300, "Fraunces-Light.ttf"),
-    "serif-b": ("Fraunces", "normal", 600, "Fraunces-SemiBold.ttf"),
-    "serif-i": ("Fraunces", "normal", 600, "Fraunces-SemiBold.ttf"),
-    "sans": ("Inter", "normal", 400, "Inter-Regular.ttf"),
-    "sans-b": ("Inter", "normal", 700, "Inter-Bold.ttf"),
     "mono": ("Geist Mono", "normal", 400, "geistmono-400.woff"),
 }
 
@@ -112,34 +107,38 @@ BASE_CSS = """
 """
 
 def font_face(keys):
-    expanded = []
-    for k in keys:
-        if k in ("serif", "serif-i", "serif-b", "fraunces"):
-            expanded.extend(["fraunces-light", "fraunces-semi"])
-        elif k in ("sans", "sans-b", "inter"):
-            expanded.extend(["inter-reg", "inter-bold"])
-        else:
-            expanded.append(k)
-
     out = []
     seen = set()
-    for k in expanded:
-        if k not in FONT_FILES:
-            continue
-        fam, style, weight, fn = FONT_FILES[k]
-        combo = (fam, style, weight)
-        if combo in seen:
-            continue
-        seen.add(combo)
-        font_path = os.path.join(FONTS, fn)
-        if os.path.exists(font_path):
-            b64 = base64.b64encode(open(font_path, "rb").read()).decode()
-            fmt = "truetype" if fn.endswith(".ttf") else "woff"
-            mime = "font/truetype" if fn.endswith(".ttf") else "font/woff"
-            out.append(
-                f"@font-face{{font-family:'{fam}';font-style:{style};font-weight:{weight};"
-                f"src:url(data:{mime};base64,{b64}) format('{fmt}')}}"
-            )
+    for k in keys:
+        if k in ("serif", "fraunces"):
+            subkeys = ["fraunces-light", "fraunces-semi", "fraunces-semi-italic"]
+        elif k in ("serif-i",):
+            subkeys = ["fraunces-semi-italic"]
+        elif k in ("sans", "inter"):
+            subkeys = ["inter-reg"]
+        elif k in ("sans-b", "inter-bold"):
+            subkeys = ["inter-bold"]
+        else:
+            subkeys = [k]
+
+        for sk in subkeys:
+            if sk not in FONT_FILES:
+                continue
+            fam, style, weight, fn = FONT_FILES[sk]
+            combo = (fam, style, weight)
+            if combo in seen:
+                continue
+            seen.add(combo)
+            font_path = os.path.join(FONTS, fn)
+            if os.path.exists(font_path):
+                raw = open(font_path, "rb").read()
+                b64 = base64.b64encode(raw).decode()
+                fmt = "woff" if raw[:4] == b"wOFF" else ("woff2" if raw[:4] == b"wOF2" else "truetype")
+                mime = f"font/{fmt}"
+                out.append(
+                    f"@font-face{{font-family:'{fam}';font-style:{style};font-weight:{weight};"
+                    f"src:url(data:{mime};base64,{b64}) format('{fmt}')}}"
+                )
     return "".join(out)
 
 GAP = 12
