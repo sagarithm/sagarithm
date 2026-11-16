@@ -1,8 +1,39 @@
 <!-- Every card is an animated SVG drawn by scripts/render_readme_cards.py and refreshed daily
      by .github/workflows/update-profile-art.yml.
      Theme-aware: automatically adapts between GitHub Dark Mode and Light Mode.
+     Typography: Fraunces (Headings/Editorial) & Inter (Body/Interface).
      Spacing is baked into the SVGs, so keep this block free of blank lines and keep the cards in
      a row on one line with no spaces between them. -->
+<style>
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/Fraunces-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/Fraunces-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+</style>
+
 <div align="center">
 <a href="https://sagarithm.in"><picture><source media="(prefers-color-scheme: dark)" srcset="./cards/hero-dark.svg" /><img src="./cards/hero-light.svg" width="100%" alt="Sagar Kewat. Product Engineer and AI Builder. Founder @ Pixartual." /></picture></a><br>
 <picture><source media="(prefers-color-scheme: dark)" srcset="./cards/heatmap-dark.svg" /><img src="./cards/heatmap-light.svg" width="100%" alt="Shaping future through creative code: refreshed daily" /></picture><br>

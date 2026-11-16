@@ -4,7 +4,8 @@ Render Sagar's profile README cards as animated SVGs into cards/.
 Generates dual-theme cards:
 - Light theme: warm paper-and-ink aesthetic (#f3f3f1 background, #111111 ink)
 - Dark theme: sleek obsidian/slate aesthetic (#0d1117 background, #f0f6fc typography, glowing accents)
-- Embedded subset WOFF fonts (Instrument Serif, Geist, Geist Mono)
+- Brand typography: Fraunces (Light 300 & SemiBold 600) for headings/editorial titles,
+  Inter (Regular 400 & Bold 700) for body/interface text, and Geist Mono for code/telemetry
 - Padded to tile seamlessly across rows on GitHub profile READMEs
 """
 import base64
@@ -59,15 +60,24 @@ THEMES = {
 
 W = 880  # standard GitHub README column width at 100%
 
-SERIF = "'Instrument Serif', Georgia, serif"
-SANS = "Geist, system-ui, -apple-system, sans-serif"
+# ---- TYPOGRAPHY SETUP -------------------------------------------------------
+# Headings & editorial titles: Fraunces (Light 300 & SemiBold 600)
+# Body & interface text: Inter (Regular 400 & Bold 700)
+SERIF = "'Fraunces', Georgia, serif"
+SANS = "'Inter', system-ui, -apple-system, sans-serif"
 MONO = "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
 
 FONT_FILES = {
-    "serif": ("Instrument Serif", "normal", 400, "serif-400.woff"),
-    "serif-i": ("Instrument Serif", "italic", 400, "serif-italic.woff"),
-    "sans": ("Geist", "normal", 400, "geist-400.woff"),
-    "sans-b": ("Geist", "normal", 600, "geist-600.woff"),
+    "fraunces-light": ("Fraunces", "normal", 300, "Fraunces-Light.ttf"),
+    "fraunces-semi": ("Fraunces", "normal", 600, "Fraunces-SemiBold.ttf"),
+    "inter-reg": ("Inter", "normal", 400, "Inter-Regular.ttf"),
+    "inter-bold": ("Inter", "normal", 700, "Inter-Bold.ttf"),
+    # Legacy alias mappings for backwards compatibility
+    "serif": ("Fraunces", "normal", 300, "Fraunces-Light.ttf"),
+    "serif-b": ("Fraunces", "normal", 600, "Fraunces-SemiBold.ttf"),
+    "serif-i": ("Fraunces", "normal", 600, "Fraunces-SemiBold.ttf"),
+    "sans": ("Inter", "normal", 400, "Inter-Regular.ttf"),
+    "sans-b": ("Inter", "normal", 700, "Inter-Bold.ttf"),
     "mono": ("Geist Mono", "normal", 400, "geistmono-400.woff"),
 }
 
@@ -102,15 +112,33 @@ BASE_CSS = """
 """
 
 def font_face(keys):
-    out = []
+    expanded = []
     for k in keys:
+        if k in ("serif", "serif-i", "serif-b", "fraunces"):
+            expanded.extend(["fraunces-light", "fraunces-semi"])
+        elif k in ("sans", "sans-b", "inter"):
+            expanded.extend(["inter-reg", "inter-bold"])
+        else:
+            expanded.append(k)
+
+    out = []
+    seen = set()
+    for k in expanded:
+        if k not in FONT_FILES:
+            continue
         fam, style, weight, fn = FONT_FILES[k]
+        combo = (fam, style, weight)
+        if combo in seen:
+            continue
+        seen.add(combo)
         font_path = os.path.join(FONTS, fn)
         if os.path.exists(font_path):
             b64 = base64.b64encode(open(font_path, "rb").read()).decode()
+            fmt = "truetype" if fn.endswith(".ttf") else "woff"
+            mime = "font/truetype" if fn.endswith(".ttf") else "font/woff"
             out.append(
                 f"@font-face{{font-family:'{fam}';font-style:{style};font-weight:{weight};"
-                f"src:url(data:font/woff;base64,{b64}) format('woff')}}"
+                f"src:url(data:{mime};base64,{b64}) format('{fmt}')}}"
             )
     return "".join(out)
 
@@ -194,10 +222,10 @@ def hero(theme_name):
   <rect class="live" x="48" y="49" width="8" height="8" rx="2" fill="{t['tech']}"/>
   <text x="66" y="57" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{t['muted']}">PRODUCT ENGINEER &#8226; FOUNDER @ PIXARTUAL</text>
 </g>
-<text class="r" {d(0.15)} x="44" y="185" font-family="{SERIF}" font-size="116" letter-spacing="-2.5" fill="{t['ink']}">Sagar</text>
-<text class="r" {d(0.30)} x="44" y="285" font-family="{SERIF}" font-style="italic" font-size="116" letter-spacing="-2.5" fill="url(#shine_{theme_name})">Kewat</text>
+<text class="r" {d(0.15)} x="44" y="185" font-family="{SERIF}" font-weight="300" font-size="116" letter-spacing="-2.5" fill="{t['ink']}">Sagar</text>
+<text class="r" {d(0.30)} x="44" y="285" font-family="{SERIF}" font-weight="600" font-style="italic" font-size="116" letter-spacing="-2.5" fill="url(#shine_{theme_name})">Kewat</text>
 <g class="r" {d(0.55)}>
-  {text_lines(48, 332, ["I build AI products, autonomous agentic systems,", "and contribute to core open-source infrastructure."], 27, f'font-family="{SANS}" font-size="18" fill="{t["ink_soft"]}"')}
+  {text_lines(48, 332, ["I build AI products, autonomous agentic systems,", "and contribute to core open-source infrastructure."], 27, f'font-family="{SANS}" font-weight="400" font-size="18" fill="{t["ink_soft"]}"')}
 </g>
 <g class="f" {d(0.8)}>
   <text x="48" y="396" font-family="{MONO}" font-size="13" fill="{t['ink']}">sagarithm.in</text>
@@ -231,7 +259,7 @@ def count_up(num, word, x, y, attrs, begin, dur=1.1, frames=18):
 def tile(name, label, color, on, num, word, blurb, delay, pos, theme_name, font_size=36):
     lines = wrap(blurb, 34)
     blurb_svg = "".join(
-        f'<text class="r" {d(delay + 0.75 + i * 0.1)} x="24" y="{150 + i * 20}" font-family="{SANS}" '
+        f'<text class="r" {d(delay + 0.75 + i * 0.1)} x="24" y="{150 + i * 20}" font-family="{SANS}" font-weight="400" '
         f'font-size="14" fill="{on}" opacity=".92">{escape(l)}</text>'
         for i, l in enumerate(lines)
     )
@@ -253,7 +281,7 @@ def tile(name, label, color, on, num, word, blurb, delay, pos, theme_name, font_
   <text class="sl" {d(delay + 0.35)} x="24" y="38" font-family="{MONO}" font-size="12" letter-spacing="1.2" fill="{on}">{label}</text>
   <g class="ai" {d(delay + 0.5)}><text class="n" style="animation-delay:{delay + 1.3:.2f}s" x="250" y="38" font-family="{MONO}" font-size="14" fill="{on}">&#8594;</text></g>
   <g clip-path="url(#slot_{name}_{theme_name})"><g class="ro" {d(delay + 0.45)}>
-    {count_up(num, word, 22, 108, f'font-family="{SERIF}" font-size="{font_size}" fill="{on}"', delay + 0.45)}
+    {count_up(num, word, 22, 108, f'font-family="{SERIF}" font-weight="600" font-size="{font_size}" fill="{on}"', delay + 0.45)}
   </g></g>
   {blurb_svg}
 </g>
@@ -303,8 +331,8 @@ def activity(data, theme_name):
         y = 104 + i * 92
         side.append(
             f'<g class="r" {d(2.6 + i * 0.15)}>'
-            f'<text x="650" y="{y}" font-family="{SERIF}" font-size="40" fill="{t["ink"]}">{big}</text>'
-            f'<text x="650" y="{y + 24}" font-family="{SANS}" font-size="13" fill="{t["muted"]}">{small}</text></g>'
+            f'<text x="650" y="{y}" font-family="{SERIF}" font-weight="600" font-size="40" fill="{t["ink"]}">{big}</text>'
+            f'<text x="650" y="{y + 24}" font-family="{SANS}" font-weight="400" font-size="13" fill="{t["muted"]}">{small}</text></g>'
         )
         if i < 2:
             side.append(f'<rect class="f" {d(2.6)} x="650" y="{y + 44}" width="190" height="1" fill="{t["rule"]}"/>')
@@ -313,7 +341,7 @@ def activity(data, theme_name):
 <rect width="{W}" height="{h}" rx="14" fill="{t['bg']}"/>
 {border}
 <text class="f" {d(1.9)} x="40" y="58" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{t['muted']}">THE LAST 12 MONTHS ON GITHUB</text>
-<text class="r" {d(2.0)} x="38" y="114" font-family="{SERIF}" font-size="52" fill="{t['ink']}">{data["total_contributions"]:,} <tspan font-style="italic">contributions</tspan></text>
+<text class="r" {d(2.0)} x="38" y="114" font-family="{SERIF}" font-weight="300" font-size="52" fill="{t['ink']}">{data["total_contributions"]:,} <tspan font-weight="600" font-style="italic">contributions</tspan></text>
 {''.join(bars)}
 {''.join(side)}
 """
@@ -362,7 +390,7 @@ def heatmap(data, theme_name):
     body = f"""
 <rect width="{W}" height="{h}" rx="14" fill="{t['bg']}"/>
 {border}
-<text class="r" {d(0.8)} x="42" y="62" font-family="{SERIF}" font-size="34" fill="{t['ink']}">Shaping future <tspan font-style="italic" fill="{t['tech']}">through creative code</tspan></text>
+<text class="r" {d(0.8)} x="42" y="62" font-family="{SERIF}" font-weight="300" font-size="34" fill="{t['ink']}">Shaping future <tspan font-weight="600" font-style="italic" fill="{t['tech']}">through creative code</tspan></text>
 <text class="f" {d(0.8)} x="{right}" y="60" text-anchor="end" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{t['muted']}">REFRESHED DAILY</text>
 {''.join(cells)}
 <g class="f" {d(2.4)}>{labels}
@@ -393,8 +421,8 @@ def repo_card(i, name, desc, lang, color_key, stars, theme_name):
 {border}
 <g class="r" {d(delay)}>
   <rect x="24" y="30" width="8" height="8" rx="2" fill="{color}"/>
-  <text x="40" y="39" font-family="{SANS}" font-weight="600" font-size="18" fill="{t['ink']}">{escape(name)}</text>
-  {text_lines(24, 72, wrap(desc, 34), 21, f'font-family="{SANS}" font-size="14" fill="{t["ink_soft"]}"')}
+  <text x="40" y="39" font-family="{SANS}" font-weight="700" font-size="18" fill="{t['ink']}">{escape(name)}</text>
+  {text_lines(24, 72, wrap(desc, 34), 21, f'font-family="{SANS}" font-weight="400" font-size="14" fill="{t["ink_soft"]}"')}
   <text x="24" y="{REPO_H - 24}" font-family="{MONO}" font-size="12" fill="{t['muted']}">{escape(meta)}</text>
 </g>
 """
@@ -404,8 +432,8 @@ def repo_card(i, name, desc, lang, color_key, stars, theme_name):
 def section_title(text, italic, theme_name):
     fg = "#e6edf3" if theme_name == "dark" else "#111111"
     body = (
-        f'<text class="r" {d(4.4)} x="2" y="46" font-family="{SERIF}" font-size="34" fill="{fg}">{escape(text)} '
-        f'<tspan font-style="italic">{escape(italic)}</tspan></text>'
+        f'<text class="r" {d(4.4)} x="2" y="46" font-family="{SERIF}" font-weight="300" font-size="34" fill="{fg}">{escape(text)} '
+        f'<tspan font-weight="600" font-style="italic">{escape(italic)}</tspan></text>'
     )
     write(f"title-coding-{theme_name}.svg", svg(W, 64, body, ["serif", "serif-i"], f"{text} {italic}", bottom=0))
 
