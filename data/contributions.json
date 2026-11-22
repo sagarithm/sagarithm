@@ -1,16 +1,16 @@
 {
   "user": "sagarithm",
-  "fetched_at": "2026-11-21T23:14:30.479669+00:00",
-  "total_contributions": 5866,
-  "active_days": 370,
+  "fetched_at": "2026-11-22T14:33:09.563813+00:00",
+  "total_contributions": 5798,
+  "active_days": 364,
   "current_streak": {
-    "length": 162,
+    "length": 163,
     "start": "2026-06-13",
-    "end": "2026-11-21"
+    "end": "2026-11-22"
   },
   "longest_streak": {
-    "length": 208,
-    "start": "2025-11-16",
+    "length": 201,
+    "start": "2025-11-23",
     "end": "2026-06-11"
   },
   "best_day": {
@@ -21,7 +21,7 @@
   "monthly": [
     {
       "month": "2025-11",
-      "total": 188
+      "total": 100
     },
     {
       "month": "2025-12",
@@ -69,45 +69,10 @@
     },
     {
       "month": "2026-11",
-      "total": 761
+      "total": 781
     }
   ],
   "days": [
-    {
-      "date": "2025-11-16",
-      "count": 10,
-      "level": 1
-    },
-    {
-      "date": "2025-11-17",
-      "count": 12,
-      "level": 1
-    },
-    {
-      "date": "2025-11-18",
-      "count": 10,
-      "level": 1
-    },
-    {
-      "date": "2025-11-19",
-      "count": 25,
-      "level": 2
-    },
-    {
-      "date": "2025-11-20",
-      "count": 11,
-      "level": 1
-    },
-    {
-      "date": "2025-11-21",
-      "count": 10,
-      "level": 1
-    },
-    {
-      "date": "2025-11-22",
-      "count": 10,
-      "level": 1
-    },
     {
       "date": "2025-11-23",
       "count": 10,
@@ -1925,8 +1890,13 @@
     },
     {
       "date": "2026-11-21",
-      "count": 55,
+      "count": 56,
       "level": 3
+    },
+    {
+      "date": "2026-11-22",
+      "count": 19,
+      "level": 1
     }
   ]
 }
